@@ -1,8 +1,4 @@
 
-// Action Types /////
-const int T_DAMAGE = 0;
-const int T_PROTECTION = 1;
-
 // Damage Types (You can add custom damage types here) /////
 const int DT_BARRIER = 0;
 const int DT_BLUNT = 1;
@@ -42,41 +38,121 @@ func int SwitchByET(var int elementType, var int fire, var int ice, var int dark
 	if(elementType == ET_WIND){ return wind; };
 };
 
-func int GetCustomDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int initialDamage, var int damageType, var int elementType)
+
+func int CalcMinimalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int spellID)
+{
+	var int minimalDamage;
+	
+	minimalDamage = SwitchByDT(damageType, 0, 0, 5, 0, 100, 0, 5, 100, 1000);
+	
+	if(damageType == DT_EDGE)
+	{
+		if(Hlp_GetInstanceID(damageReceiver) == Hlp_GetInstanceID(NONE_8987_NIKITA))
+		{
+			minimalDamage = 23; 
+		};
+	};
+	if(damageType == DT_BLUNT)
+	{
+		if(Hlp_GetInstanceID(damageReceiver) == Hlp_GetInstanceID(NONE_8987_NIKITA))
+		{
+			minimalDamage = 2; 
+		};
+	};
+	
+	return minimalDamage;
+};
+
+func int CalcDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int isTotalDamage, var int damageType, var int initialDamage, var int spellID)
 {
 	var int i; i = initialDamage; // i - initial damage
 	
 	var int resultDamage; resultDamage = i; // i - initial damage
 	
-	// Calculating magic damage for mobs /////
-
-	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_FIREGOLEM)
+	if(!isTotalDamage)
 	{
-		resultDamage = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, 0, Hlp_MultiplyInt(i, 1.25), 0, 0), i, i, i); //0, 1.25x, 0, 0
+		// Calculating damage for mobs /////
+		
+		if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_STONEGOLEM)
+		{
+			resultDamage = SwitchByDT(damageType, i, Hlp_MultiplyInt(i, 2.00), 0, i, i, Hlp_MultiplyInt(i, 3.00), /* SwitchByET(elementType, 0, 0, 0, 0), */ i, i, i); //0, 0, 0, 0
+		};
+		
+		// Calculating damage for npcs /////
+		
+		if(Hlp_GetInstanceID(damageReceiver) == Hlp_GetInstanceID(NONE_8987_NIKITA))
+		{
+			var int curHP;
+			var int maxHP;
+			var int hpPercent;
+			
+			var float multiplier;
+			
+			curHP = damageReceiver.attribute[ATR_HITPOINTS];
+			maxHP = damageReceiver.attribute[ATR_HITPOINTS_MAX];
+			
+			multiplier = 1.0;
+			
+			if (maxHP > 0)
+			{
+				hpPercent = curHP * 100 / maxHP;
+				if (hpPercent <= 20)
+				{
+					multiplier = 3.0;
+				}
+				else if (hpPercent <= 40)
+				{
+					multiplier = 2.0;
+				}
+				else if (hpPercent <= 60)
+				{
+					multiplier = 1.5;
+				}
+				else if (hpPercent <= 80)
+				{
+					multiplier = 1.25;
+				}
+				else
+				{
+					multiplier = 1.0;
+				};
+			};
+			
+			resultDamage = SwitchByDT(damageType, i, Hlp_MultiplyInt(i, multiplier), 0, i, i, Hlp_MultiplyInt(i, 3.00), /* SwitchByET(elementType, 0, 0, 0, 0), */ i, i, i); //0, 0, 0, 0
+		};
 	};
-	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_ICEGOLEM)
+	if(isTotalDamage)
 	{
-		resultDamage = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, Hlp_MultiplyInt(i, 1.25), 0, 0, 0), i, i, i); //1.25x, 0, 0, 0
-	};
-	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_STONEGOLEM)
-	{
-		resultDamage = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, 0, 0, 0, 0), i, i, i); //0, 0, 0, 0
-	};
-	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_Icewolf)
-	{
-		resultDamage = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, Hlp_MultiplyInt(i, 1.75), 0, i, i), i, i, i); //1.75x, 0, i, i
-	};
-	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_SKELETON)
-	{
-		resultDamage = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, Hlp_MultiplyInt(i, 1.50), i, 0, i), i, i, i); //1.50x, i, 0, i
-	};
-	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_SKELETON_MAGE)
-	{
-		resultDamage = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, Hlp_MultiplyInt(i, 1.50), i, 0, i), i, i, i); //1.50x, i, 0, i
-	};
-	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_ZOMBIE)
-	{
-		resultDamage = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, Hlp_MultiplyInt(i, 1.50), i, 0, i), i, i, i); //1.50x, i, 0, i
+		// Calculating damage for mobs /////
+		
+		if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_FIREGOLEM)
+		{
+			resultDamage = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, 0, Hlp_MultiplyInt(i, 1.25), 0, 0), */ i, i, i); //0, 1.25x, 0, 0
+		};
+		if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_ICEGOLEM)
+		{
+			resultDamage = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, Hlp_MultiplyInt(i, 1.25), 0, 0, 0), */ i, i, i); //1.25x, 0, 0, 0
+		};
+		if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_STONEGOLEM)
+		{
+			resultDamage = SwitchByDT(damageType, i, Hlp_MultiplyInt(i, 1.25), 0, i, i, i, /* SwitchByET(elementType, 0, 0, 0, 0), */ i, i, i); //0, 0, 0, 0
+		};
+		if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_Icewolf)
+		{
+			resultDamage = SwitchByDT(damageType, i, i, Hlp_MultiplyInt(i, 2.00), i, i, i, /* SwitchByET(elementType, Hlp_MultiplyInt(i, 1.75), 0, i, i), */ i, i, Hlp_MultiplyInt(i, 4.00)); //1.75x, 0, i, i
+		};
+		if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_SKELETON)
+		{
+			resultDamage = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, Hlp_MultiplyInt(i, 1.50), i, 0, i), */ i, i, 0); //1.50x, i, 0, i
+		};
+		if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_SKELETON_MAGE)
+		{
+			resultDamage = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, Hlp_MultiplyInt(i, 1.50), i, 0, i), */ i, i, i); //1.50x, i, 0, i
+		};
+		if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_ZOMBIE)
+		{
+			resultDamage = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, Hlp_MultiplyInt(i, 1.50), i, 0, i), */ i, i, i); //1.50x, i, 0, i
+		};
 	};
 	
 	// You can write your own logic to send a custom spell damage below /////
@@ -91,25 +167,25 @@ func int GetCustomProtectionOfItem(var int itemInstanceID, var int damageType, v
 	// Amulets
 	if(itemInstanceID == ItAm_PROT_MAGIC_FIRE_01)
 	{
-		return SwitchByDT(damageType, 0, 0, 0, 0, 0, SwitchByET(elementType, 10, 0, 0, 0), 0, 0, 0, 0); //10, 0, 0, 0
+		return SwitchByDT(damageType, 0, 0, 0, 0, 0, 0, /* SwitchByET(elementType, 10, 0, 0, 0), */ 0, 0, 0); //10, 0, 0, 0
 	};
 	if(itemInstanceID == ItAm_PROT_MAGIC_ICE_01)
 	{
-		return SwitchByDT(damageType, 0, 0, 0, 0, 0, SwitchByET(elementType, 0, 10, 0, 0), 0, 0, 0, 0); //0, 10, 0, 0
+		return SwitchByDT(damageType, 0, 0, 0, 0, 0, 0, /* SwitchByET(elementType, 0, 10, 0, 0), */ 0, 0, 0); //0, 10, 0, 0
 	};
 	if(itemInstanceID == ItAm_PROT_MAGIC_DARKNESS_01)
 	{
-		return SwitchByDT(damageType, 0, 0, 0, 0, 0, SwitchByET(elementType, 0, 0, 10, 0), 0, 0, 0, 0); //0, 0, 10, 0
+		return SwitchByDT(damageType, 0, 0, 0, 0, 0, 0, /* SwitchByET(elementType, 0, 0, 10, 0), */ 0, 0, 0); //0, 0, 10, 0
 	};
 	if(itemInstanceID == ItAm_PROT_MAGIC_WIND_01)
 	{
-		return SwitchByDT(damageType, 0, 0, 0, 0, 0, SwitchByET(elementType, 0, 0, 0, 10), 0, 0, 0, 0); //0, 0, 0, 10
+		return SwitchByDT(damageType, 0, 0, 0, 0, 0, 0, /* SwitchByET(elementType, 0, 0, 0, 10), */ 0, 0, 0); //0, 0, 0, 10
 	};
 	
 	// Armor
 	if(itemInstanceID == ItAr_Nikita)
 	{
-		return SwitchByDT(damageType, 0, 0, 0, 0, 0, SwitchByET(elementType, 75, 100, 125, 0), 0, 0, 0, 0); //75, 100, 125, 0
+		return SwitchByDT(damageType, 0, 0, 0, 0, 0, 0, /* SwitchByET(elementType, 75, 100, 125, 0), */ 0, 0, 0); //75, 100, 125, 0
 	};
 	
 	// Rings
@@ -119,32 +195,32 @@ func int GetCustomProtectionOfItem(var int itemInstanceID, var int damageType, v
 	return 0;
 };
 
-func int GetCustomProtection(var C_NPC damageSender, var C_NPC damageReceiver, var int initialProtection, var int damageType, var int elementType)
+func int CalcProtection(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialProtection, var int spellID)
 {
 	var int i; i = initialProtection; // i - initial protection
 	
 	// Amulets
 	if(Hlp_IsItemEquipped(ItAm_PROT_MAGIC_FIRE_01, damageReceiver))
 	{
-		i += GetCustomProtectionOfItem(ItAm_PROT_MAGIC_FIRE_01, damageType, elementType);
+		i += GetCustomProtectionOfItem(ItAm_PROT_MAGIC_FIRE_01, damageType, ET_FIRE);
 	};
 	if(Hlp_IsItemEquipped(ItAm_PROT_MAGIC_ICE_01, damageReceiver))
 	{
-		i += GetCustomProtectionOfItem(ItAm_PROT_MAGIC_ICE_01, damageType, elementType);
+		i += GetCustomProtectionOfItem(ItAm_PROT_MAGIC_ICE_01, damageType, ET_ICE);
 	};
 	if(Hlp_IsItemEquipped(ItAm_PROT_MAGIC_DARKNESS_01, damageReceiver))
 	{
-		i += GetCustomProtectionOfItem(ItAm_PROT_MAGIC_DARKNESS_01, damageType, elementType);
+		i += GetCustomProtectionOfItem(ItAm_PROT_MAGIC_DARKNESS_01, damageType, ET_DARKNESS);
 	};
 	if(Hlp_IsItemEquipped(ItAm_PROT_MAGIC_WIND_01, damageReceiver))
 	{
-		i += GetCustomProtectionOfItem(ItAm_PROT_MAGIC_WIND_01, damageType, elementType);
+		i += GetCustomProtectionOfItem(ItAm_PROT_MAGIC_WIND_01, damageType, ET_WIND);
 	};
 	
 	// Armor
 	if(Hlp_IsItemEquipped(ItAr_Nikita, damageReceiver))
 	{
-		i += GetCustomProtectionOfItem(Hlp_GetItemInstanceID(ItAr_Nikita), damageType, elementType);
+		i += GetCustomProtectionOfItem(Hlp_GetItemInstanceID(ItAr_Nikita), damageType, ET_DARKNESS);
 	};
 	
 	// Rings
@@ -157,42 +233,42 @@ func int GetCustomProtection(var C_NPC damageSender, var C_NPC damageReceiver, v
 	
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_FIREGOLEM)
 	{
-		resultProtection = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, immune, 0, i, i), i, i, i); //immune, 0, i, i
+		resultProtection = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, immune, 0, i, i), */ i, i, i); //immune, 0, i, i
 	};
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_ICEGOLEM)
 	{
-		resultProtection = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, 0, immune, i, i), i, i, i); //0, immune, i, i
+		resultProtection = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, 0, immune, i, i), */ i, i, i); //0, immune, i, i
 	};
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_STONEGOLEM)
 	{
-		resultProtection = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, immune, immune, immune, immune), i, i, i); //immune, immune, immune, immune
+		resultProtection = SwitchByDT(damageType, i, Hlp_MultiplyInt(i, 0.70), i, i, i, i, /* SwitchByET(elementType, immune, immune, immune, immune), */ i, i, i); //immune, immune, immune, immune
 	};
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_Icewolf)
 	{
-		resultProtection = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, i, i, i, i), i, i, i); //i, i, i, i
+		resultProtection = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, i, i, i, i), */ i, i, i); //i, i, i, i
 	};
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_SKELETON)
 	{
-		resultProtection = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, Hlp_MultiplyInt(i, 0.70), i, immune, i), i, i, i); //0.70x, i, immune, i
+		resultProtection = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, Hlp_MultiplyInt(i, 0.70), i, immune, i), */ i, i, i); //0.70x, i, immune, i
 	};
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_SKELETON_MAGE)
 	{
-		resultProtection = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, Hlp_MultiplyInt(i, 0.70), i, immune, i), i, i, i); //0.70x, i, immune, i
+		resultProtection = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, Hlp_MultiplyInt(i, 0.70), i, immune, i), */ i, i, i); //0.70x, i, immune, i
 	};
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_ZOMBIE)
 	{
-		resultProtection = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, Hlp_MultiplyInt(i, 0.70), i, immune, i), i, i, i); //0.70x, i, immune, i
+		resultProtection = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, Hlp_MultiplyInt(i, 0.70), i, immune, i), */ i, i, i); //0.70x, i, immune, i
 	};
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_ORCELITE)
 	{
-		resultProtection = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, i, i, 0, i), i, i, i); //i, i, 0, i
+		resultProtection = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, i, i, 0, i), */ i, i, i); //i, i, 0, i
 	};
 	
 	// Calculating magic protection for npcs /////
 	
 	if(Hlp_GetInstanceID(damageReceiver) == Hlp_GetInstanceID(NONE_8987_NIKITA))
 	{
-		resultProtection = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(elementType, Hlp_MultiplyInt(i, 0.80), i, immune, 0), i, i, i); //0.80x, i, immune, 0
+		resultProtection = SwitchByDT(damageType, i, i, i, i, i, i, /* SwitchByET(elementType, Hlp_MultiplyInt(i, 0.80), i, immune, 0), */ i, i, i); //0.80x, i, immune, 0
 	};
 	
 	// You can write your own logic to send a custom protection below /////
@@ -202,41 +278,50 @@ func int GetCustomProtection(var C_NPC damageSender, var C_NPC damageReceiver, v
 	return resultProtection;
 };
 
-func int SwitchByActionType(var C_NPC damageSender, var C_NPC damageReceiver, var int actionType)
+func int GetMinimalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int spellID)
 {
-	var int resultValue;
+	var int resultDamage;
 	
-	if(actionType == T_DAMAGE)
-	{
-		resultValue = GetCustomDamage(damageSender, damageReceiver, SPL_DAMAGE_Geyser, DT_ MT_ICE);
-	};
-	if(actionType == T_PROTECTION)
-	{
-		resultValue = GetCustomProtection(damageSender, damageReceiver, damageReceiver.protection[PROT_MAGIC], ET_ICE);
-	};
-
-	return resultValue;	
+	resultDamage = CalcMinimalDamage(damageSender, damageReceiver, damageType, spellID);
+	
+	return resultDamage;
+};
+func int GetDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int isTotalDamage, var int damageType, var int initialDamage, var int spellID)
+{
+	var int resultDamage;
+	
+	resultDamage = CalcDamage(damageSender, damageReceiver, isTotalDamage, damageType, initialDamage, spellID);
+	
+	return resultDamage;
+};
+func int GetProtection(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialProtection, var int spellID)
+{
+	var int resultProtection;
+	
+	resultProtection = CalcProtection(damageSender, damageReceiver, damageType, initialProtection, spellID);
+	
+	return resultProtection;
 };
 
 func string BuildCustomMagicProtectionString(var C_ITEM item)
 {
-	var string f; f = IntToString(GetCustomProtectionOfItem(Hlp_GetItemInstanceID(item), MT_FIRE));
-	var string i; i = IntToString(GetCustomProtectionOfItem(Hlp_GetItemInstanceID(item), MT_ICE));
-	var string d; d = IntToString(GetCustomProtectionOfItem(Hlp_GetItemInstanceID(item), MT_DARKNESS));
-	var string w; w = IntToString(GetCustomProtectionOfItem(Hlp_GetItemInstanceID(item), MT_WIND));
+	var string f; f = IntToString(GetCustomProtectionOfItem(Hlp_GetItemInstanceID(item), DT_MAGIC, ET_FIRE));
+	var string i; i = IntToString(GetCustomProtectionOfItem(Hlp_GetItemInstanceID(item), DT_MAGIC, ET_ICE));
+	var string d; d = IntToString(GetCustomProtectionOfItem(Hlp_GetItemInstanceID(item), DT_MAGIC, ET_DARKNESS));
+	var string w; w = IntToString(GetCustomProtectionOfItem(Hlp_GetItemInstanceID(item), DT_MAGIC, ET_WIND));
 	
 	var string separator; separator = " | ";
 	
-	return ConcatStrings("Защита от магии: ", Concat5StringsWithSeparator(f, i, d, w, "", " | "));
+	return ConcatStrings("               : ", Concat5StringsWithSeparator(f, i, d, w, "", " | "));
 };
 
 // The functions below are engine-based, DON'T CHANGE THEM! /////
-func int PullCustomMagicDamage(var int damageSender_ID, var int damageReceiver_ID, var int spellID)
+/* func int PullCustomMagicDamage(var int damageSender_ID, var int damageReceiver_ID, var int spellID)
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
 	
-	return SwitchBySpellID(damageSender, damageReceiver, spellID, T_DAMAGE);
+	return SwitchBySpellID(damageSender, damageReceiver, spellID, AT_DAMAGE);
 };
 
 func int PullCustomMagicProtection(var int damageSender_ID, var int damageReceiver_ID, var int spellID)
@@ -244,21 +329,40 @@ func int PullCustomMagicProtection(var int damageSender_ID, var int damageReceiv
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
 	
-	return SwitchBySpellID(damageSender, damageReceiver, spellID, T_PROTECTION);
+	return SwitchBySpellID(damageSender, damageReceiver, spellID, AT_PROTECTION);
+}; */
+
+func int PullIsCustomDamageType(var int damageSender_ID, var int damageReceiver_ID, var int itemInstance_ID)
+{
+	// DT_PIERCING /////
+	if(itemInstance_ID == ItMw_Meisterdegen)
+	{
+		return DT_PIERCING;
+	};
+	
+	return -1;
 };
 
-func int PullCustomDamage(var int damageSender_ID, var int damageReceiver_ID, var int  var int spellID)
+func int PullMinimalDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int spellID)
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
 	
-	return SwitchByActionType(damageSender, damageReceiver, spellID, T_DAMAGE);
+	return GetMinimalDamage(damageSender, damageReceiver, damageType, spellID);
 };
 
-func int PullCustomProtection(var int damageSender_ID, var int damageReceiver_ID, var int spellID)
+func int PullCustomDamage(var int damageSender_ID, var int damageReceiver_ID, var int isTotalDamage, var int damageType, var int initialDamage, var int spellID) // spellID can be -1 if the damage type is not magic. 
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
 	
-	return SwitchByActionType(damageSender, damageReceiver, spellID, T_PROTECTION);
+	return GetDamage(damageSender, damageReceiver, isTotalDamage, damageType, initialDamage, spellID);
+};
+
+func int PullCustomProtection(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialProtection, var int spellID) // spellID can be -1 if the damage type is not magic.
+{
+	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
+	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
+	
+	return GetProtection(damageSender, damageReceiver, damageType, initialProtection, spellID);
 };
