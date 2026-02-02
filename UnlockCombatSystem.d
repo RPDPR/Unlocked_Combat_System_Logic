@@ -50,7 +50,7 @@ func int SwitchByCrit(var int isCrit, var int nonCrit, var int crit)
 	return -1;
 };
 
-func int GetET(var int spellID)
+func int GetETBySpellID(var int spellID)
 {
 	if(spellID == SPL_Geyser) { return ET_ICE; };
 	if(spellID == SPL_Icebolt) { return ET_ICE; };
@@ -114,7 +114,7 @@ func int CalcMinimalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var
 {
 	var int minimalDamage;
 	
-	minimalDamage = SwitchByDT(damageType, 0, 0, 5, 0, 100, 0, 5, 100, 1000);
+	minimalDamage = SwitchByDT(damageType, 0, 0, 5, 0, 100, 0, 5, 100, 1);
 	
 	if(damageType == DT_EDGE)
 	{
@@ -155,6 +155,10 @@ func int CalcPureDamage(var C_NPC damageSender, var C_NPC damageReceiver, var in
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_STONEGOLEM)
 	{
 		resultDamage = SwitchByDT(damageType, i, Hlp_MultiplyInt(i, 2.00), 0, i, i, SwitchByET(GetETBySpellID(spellID), i, i, 0, 0), i, i, i); //0, 0, 0, 0
+	};
+	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_Icewolf)
+	{
+		resultDamage = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(GetETBySpellID(spellID), i, i, i, i), i, i, Hlp_MultiplyInt(i, 1.25)); //0, 0, 0, 0
 	};
 	
 	// Calculating damage for npcs /////
@@ -230,7 +234,7 @@ func int CalcTotalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var i
 	};
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_Icewolf)
 	{
-		resultDamage = SwitchByDT(damageType, i, i, Hlp_MultiplyInt(i, 2.00), i, i, i, /* SwitchByET(elementType, Hlp_MultiplyInt(i, 1.75), 0, i, i), */ i, i, Hlp_MultiplyInt(i, 4.00)); //1.75x, 0, i, i
+		resultDamage = SwitchByDT(damageType, i, i, i, i, i, SwitchByET(GetETBySpellID(spellID), i, i, i, i), i, i, Hlp_MultiplyInt(i, 2.40)); //0, 0, 0, 0
 	};
 	if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_SKELETON)
 	{
@@ -344,7 +348,7 @@ func int CalcProtection(var C_NPC damageSender, var C_NPC damageReceiver, var in
 	// Amulets
 	if(Hlp_IsItemEquipped(ItAm_PROT_MAGIC_FIRE_01, damageReceiver))
 	{
-		i += GetCustomProtectionOfItem(ItAm_PROT_MAGIC_FIRE_01);
+		i += GetCustomProtectionOfItem(ItAm_PROT_MAGIC_FIRE_01, damageType, ET_FIRE);
 	};
 	if(Hlp_IsItemEquipped(ItAm_PROT_MAGIC_ICE_01, damageReceiver))
 	{
@@ -462,9 +466,37 @@ func int CalcProtection(var C_NPC damageSender, var C_NPC damageReceiver, var in
 	return resultProtection;
 };
 
+func float GetMultiplier(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int isCrit)
+{
+	var float resultMultiplier; resultMultiplier = -1;
+	
+	if(!isCrit)
+	{
+		// DT_EDGE /////
+		if(damageType == DT_EDGE)
+		{
+			resultMultiplier = 0.7;
+		};
+		// DT_PIERCING /////
+		if(damageType == DT_PIERCING)
+		{
+			resultMultiplier = 0.5;
+		};
+	};
+	if(isCrit)
+	{
+		// DT_PIERCING /////
+		if(damageType == DT_PIERCING)
+		{
+			resultMultiplier = 1.0;
+		};
+	};
+	
+	return resultMultiplier;
+};
 func int GetMinimalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int spellID)
 {
-	var int resultDamage;
+	var int resultDamage; resultDamage = -1;
 	
 	resultDamage = CalcMinimalDamage(damageSender, damageReceiver, damageType, spellID);
 	
@@ -472,7 +504,7 @@ func int GetMinimalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var 
 };
 func int GetPureDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialDamage, var int spellID)
 {
-	var int resultDamage;
+	var int resultDamage; resultDamage = -1;
 	
 	resultDamage = CalcPureDamage(damageSender, damageReceiver, damageType, initialDamage, spellID);
 	
@@ -480,7 +512,7 @@ func int GetPureDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int
 };
 func int GetTotalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialDamage, var int spellID)
 {
-	var int resultDamage;
+	var int resultDamage; resultDamage = -1;
 	
 	resultDamage = CalcTotalDamage(damageSender, damageReceiver, damageType, initialDamage, spellID);
 	
@@ -488,7 +520,7 @@ func int GetTotalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var in
 };
 func int GetProtection(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialProtection, var int spellID)
 {
-	var int resultProtection;
+	var int resultProtection; resultProtection = -1;
 	
 	resultProtection = CalcProtection(damageSender, damageReceiver, damageType, initialProtection, spellID);
 	
@@ -523,26 +555,41 @@ func int PullCustomDamageType(var int damageSender_ID, var int damageReceiver_ID
 	
 	return -1;
 };
-func float PullCustomMultiplier(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int isCrit)
+func int PullCustomDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialPureDamage, var int isCrit, var int spellID)
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
 	
-	if(!isCrit)
+	var int pureDamage; pureDamage = GetPureDamage(damageSender, damageReceiver, damageType, initialPureDamage, spellID);
+	var int protection; protection = GetProtection(damageSender, damageReceiver, damageType, 0, spellID);
+	var int minimalDamage; minimalDamage = GetMinimalDamage(damageSender, damageReceiver, damageType, spellID);
+	var float multiplier; multiplier = GetMultiplier(damageSender, damageReceiver, damageType, isCrit);
+	
+	var int totalDamage; totalDamage = 0;
+	
+	if(damageType == DT_PIERCING)
 	{
-		// DT_EDGE /////
-		if(damageType == DT_EDGE)
-		{
-			return 0.7;
-		};
-		// DT_PIERCING /////
-		if(damageType == DT_PIERCING)
-		{
-			return 0.5;
-		};
+		var int initialTotalDamage; initialTotalDamage = pureDamage + damageSender.attribute[ATR_DEXTERITY] - protection;
+		
+		totalDamage = GetTotalDamage(damageSender, damageReceiver, damageType, initialTotalDamage, spellID);
 	};
 	
-	return -1;
+	totalDamage = Hlp_MultiplyInt(totalDamage, multiplier);
+	
+	if(minimalDamage >= 0 && totalDamage < minimalDamage)
+	{
+		totalDamage = minimalDamage;
+	};
+	
+	return totalDamage;
+};
+
+func float PullMultiplier(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int isCrit)
+{
+	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
+	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
+	
+	return GetMultiplier(damageSender, damageReceiver, damageType, isCrit);
 };
 
 func int PullMinimalDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int spellID)
@@ -553,7 +600,7 @@ func int PullMinimalDamage(var int damageSender_ID, var int damageReceiver_ID, v
 	return GetMinimalDamage(damageSender, damageReceiver, damageType, spellID);
 };
 
-func int PullCustomPureDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialDamage, var int spellID) // spellID can be -1 if the damage type is not magic. 
+func int PullPureDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialDamage, var int spellID) // spellID can be -1 if the damage type is not magic. 
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
@@ -561,7 +608,7 @@ func int PullCustomPureDamage(var int damageSender_ID, var int damageReceiver_ID
 	return GetPureDamage(damageSender, damageReceiver, damageType, initialDamage, spellID);
 };
 
-func int PullCustomTotalDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialDamage, var int spellID) // spellID can be -1 if the damage type is not magic. 
+func int PullTotalDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialDamage, var int spellID) // spellID can be -1 if the damage type is not magic. 
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
@@ -569,7 +616,7 @@ func int PullCustomTotalDamage(var int damageSender_ID, var int damageReceiver_I
 	return GetTotalDamage(damageSender, damageReceiver, damageType, initialDamage, spellID);
 };
 
-func int PullCustomProtection(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialProtection, var int spellID) // spellID can be -1 if the damage type is not magic.
+func int PullProtection(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialProtection, var int spellID) // spellID can be -1 if the damage type is not magic.
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
