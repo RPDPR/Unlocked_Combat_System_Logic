@@ -56,14 +56,6 @@ var int firerain, var int firestorm, var int instantfireball)
 	return -1;
 };
 
-func float SwitchByCrit(var int isCrit, var float nonCrit, var float crit)
-{
-	if(isCrit) { return crit; };
-	if(!isCrit) { return nonCrit; };
-	
-	return -1;
-};
-
 
 func int CalcMinimalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int spellID)
 {
@@ -141,9 +133,19 @@ func float GetMultiplier(var C_NPC damageSender, var C_NPC damageReceiver, var i
 {
 	var float resultMultiplier; resultMultiplier = -1.0;
 	
-	/* if(damageType == DT_POISON)
+	/* if(!isCrit)
 	{
-		resultMultiplier = SwitchByCrit(isCrit, 0.9, 1.0);
+		if(damageType == DT_POISON)
+		{
+			resultMultiplier = 0.9;
+		};
+	};
+	if(isCrit)
+	{
+		if(damageType == DT_POISON)
+		{
+			resultMultiplier = 1.0;
+		};
 	}; */
 	
 	return resultMultiplier;
@@ -156,19 +158,19 @@ func int GetMinimalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var 
 	
 	return resultDamage;
 };
-func int GetPureDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialDamage, var int spellID)
+func int GetPureDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialPureDamage, var int spellID)
 {
 	var int resultDamage; resultDamage = -1;
 	
-	resultDamage = CalcPureDamage(damageSender, damageReceiver, damageType, initialDamage, spellID);
+	resultDamage = CalcPureDamage(damageSender, damageReceiver, damageType, initialPureDamage, spellID);
 	
 	return resultDamage;
 };
-func int GetTotalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialDamage, var int spellID)
+func int GetTotalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialTotalDamage, var int spellID)
 {
 	var int resultDamage; resultDamage = -1;
 	
-	resultDamage = CalcTotalDamage(damageSender, damageReceiver, damageType, initialDamage, spellID);
+	resultDamage = CalcTotalDamage(damageSender, damageReceiver, damageType, initialTotalDamage, spellID);
 	
 	return resultDamage;
 };
