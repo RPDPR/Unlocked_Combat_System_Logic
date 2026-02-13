@@ -1,5 +1,7 @@
 
-func int Hlp_MultiplyInt(var int value, var float x);
+func int Hlp_MultInt(var int value, var float x);
+
+func float Hlp_MultInt_F(var int value, var float x);
 
 func int Hlp_IsItemEquipped(var C_ITEM item, var C_NPC npc);
 
