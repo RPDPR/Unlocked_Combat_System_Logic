@@ -8,7 +8,7 @@ const int DT_FLY = 4;
 const int DT_MAGIC = 5;
 const int DT_POINT = 6;
 const int DT_FALL = 7;
-const int DT_POISON = 8; // CUSTOM DAMAGE TYPE
+/* const int DT_POISON = 8; */ // CUSTOM DAMAGE TYPE
 
 func int SwitchByDT(var int damageType, var int barrier, var int blunt, var int edge, var int fire, var int fly, var int magic, var int point, var int fall, var int poison)
 {
@@ -64,7 +64,7 @@ func int CalcMinimalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var
 	var int resultDamage; resultDamage = i;
 	
 	
-	/* resultDamage = SwitchByDT(damageType, i, i, i, i, i, i, i, i, 0); */
+	/* resultDamage = SwitchByDT(damageType, i, i, i, i, i, i, i, i, i); */
 	
 	return resultDamage;
 };
@@ -129,26 +129,35 @@ func int CalcProtection(var C_NPC damageSender, var C_NPC damageReceiver, var in
 		resultProtection = SwitchByDT(damageType, i, 0, -1, i, i, i, i, i, i);
 	}; */
 	
+	/* if(damageType == DT_POISON)
+	{
+		if(Npc_IsPlayer(damageReceiver))
+		{
+			resultProtection = damageReceiver.aivar[ATR_HITPOINTS_MAX] / 2;
+		};
+	}; */
+	
 	return resultProtection;
 };
 
 
-func float GetMultiplier(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int isCrit)
+func int GetMultiplier(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int isCrit)
 {
-	var float resultMultiplier; resultMultiplier = -1.0;
+	var int resultMultiplier; resultMultiplier = -1;
+	
 	
 	/* if(!isCrit)
 	{
 		if(damageType == DT_POISON)
 		{
-			resultMultiplier = 0.9; // 0.9x
+			resultMultiplier = 900; // 0.9x
 		};
 	};
 	if(isCrit)
 	{
 		if(damageType == DT_POISON)
 		{
-			resultMultiplier = 1.0; // 1.0x
+			resultMultiplier = 1000; // 1.0x
 		};
 	}; */
 	
@@ -180,7 +189,7 @@ func int GetTotalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var in
 };
 func int GetProtection(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialProtection, var int spellID)
 {
-	var int resultProtection; resultProtection = -1;
+	var int resultProtection; resultProtection = -2;
 	
 	resultProtection = CalcProtection(damageSender, damageReceiver, damageType, initialProtection, spellID);
 	
@@ -195,11 +204,7 @@ func int PullCustomDamageType(var int damageSender_ID, var int damageReceiver_ID
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
 	
-	/* if(damageSender.aivar[AIV_MM_REAL_ID] == ID_WARAN)
-	{
-		return DT_POISON;
-	};
-	if(damageSender.aivar[AIV_MM_REAL_ID] == ID_BLOODFLY)
+	/* if(damageSender.aivar[AIV_MM_REAL_ID] == ID_WARAN || damageSender.aivar[AIV_MM_REAL_ID] == ID_BLOODFLY)
 	{
 		return DT_POISON;
 	}; */
@@ -214,13 +219,18 @@ func int PullCustomDamage(var int damageSender_ID, var int damageReceiver_ID, va
 	var int pureDamage; pureDamage = GetPureDamage(damageSender, damageReceiver, damageType, initialPureDamage, spellID);
 	var int protection; protection = GetProtection(damageSender, damageReceiver, damageType, 0, spellID);
 	var int minimalDamage; minimalDamage = GetMinimalDamage(damageSender, damageReceiver, damageType, 0, spellID);
-	var float multiplier; multiplier = GetMultiplier(damageSender, damageReceiver, damageType, isCrit);
+	var float multiplier; multiplier = Hlp_MultInt_F(GetMultiplier(damageSender, damageReceiver, damageType, isCrit), 0.001);
+	
+	if(protection == -1)
+	{
+		return 0;
+	};
 	
 	var int totalDamage; totalDamage = 0;
 	
 	/* if(damageType == DT_POISON)
 	{
-		var int initialTotalDamage; initialTotalDamage = pureDamage + (damageReceiver.attribute[ATR_HITPOINTS_MAX] / 20) - protection;
+		var int initialTotalDamage; initialTotalDamage = pureDamage + ((damageReceiver.attribute[ATR_HITPOINTS_MAX] - protection) / 10);
 		
 		totalDamage = GetTotalDamage(damageSender, damageReceiver, damageType, initialTotalDamage, spellID);
 	}; */
@@ -235,7 +245,7 @@ func int PullCustomDamage(var int damageSender_ID, var int damageReceiver_ID, va
 	return totalDamage;
 };
 
-func float PullMultiplier(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int isCrit)
+func int PullMultiplier(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int isCrit)
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
@@ -251,7 +261,7 @@ func int PullMinimalDamage(var int damageSender_ID, var int damageReceiver_ID, v
 	return GetMinimalDamage(damageSender, damageReceiver, damageType, initialMinimalDamage, spellID);
 };
 
-func int PullPureDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialPureDamage, var int spellID) // spellID can be -1 if the damage type is not magic. 
+func int PullPureDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialPureDamage, var int spellID)
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
@@ -259,7 +269,7 @@ func int PullPureDamage(var int damageSender_ID, var int damageReceiver_ID, var 
 	return GetPureDamage(damageSender, damageReceiver, damageType, initialPureDamage, spellID);
 };
 
-func int PullTotalDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialTotalDamage, var int spellID) // spellID can be -1 if the damage type is not magic. 
+func int PullTotalDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialTotalDamage, var int spellID) 
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
@@ -267,7 +277,7 @@ func int PullTotalDamage(var int damageSender_ID, var int damageReceiver_ID, var
 	return GetTotalDamage(damageSender, damageReceiver, damageType, initialTotalDamage, spellID);
 };
 
-func int PullProtection(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialProtection, var int spellID) // spellID can be -1 if the damage type is not magic.
+func int PullProtection(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialProtection, var int spellID)
 {
 	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
 	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
