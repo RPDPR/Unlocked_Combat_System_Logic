@@ -1,61 +1,37 @@
 
-// Damage Types (You can add custom damage types here) /////
-const int DT_BARRIER = 0;
-const int DT_BLUNT = 1;
-const int DT_EDGE = 2;
-const int DT_FIRE = 3;
-const int DT_FLY = 4;
-const int DT_MAGIC = 5;
-const int DT_POINT = 6;
-const int DT_FALL = 7;
-/* const int DT_POISON = 8; */ // CUSTOM DAMAGE TYPE
 
-func int SwitchByDT(var int damageType, var int barrier, var int blunt, var int edge, var int fire, var int fly, var int magic, var int point, var int fall, var int poison)
+/* var int lightningFX; */ // FX INSTANCE
+/* var int someFX; */
+/* var int anotherFX; */
+
+/* var int thisFX; */
+
+
+// ACTIONS /////
+
+func void OnPreDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int spellID)
 {
-	/* if(damageType == DT_BARRIER){ return barrier; };
-	if(damageType == DT_BLUNT){ return blunt; };
-	if(damageType == DT_EDGE){ return edge; };
-	if(damageType == DT_FIRE){ return fire; };
-	if(damageType == DT_FLY){ return fly; };
-	if(damageType == DT_MAGIC){ return magic; };
-	if(damageType == DT_POINT){ return point; };
-	if(damageType == DT_FALL){ return fall; };
-	if(damageType == DT_POISON){ return poison; }; */
 	
-	return -1;
+};
+func void OnPostDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int spellID)
+{
+	// PROTOTYPE BASED FX
+	/* UCS_StartFX(lightningFX, LightningFXP, damageSender, damageReceiver); */
+	
+	/* if (UCS_GetCurrentIter(lightningFX, damageSender, damageReceiver) == 5)
+	{
+		// INLINE FX
+		UCS_StartFXEX(thisFX, damageSender, damageReceiver, 20, DT_FLY, -1, "SPELLFX_PYROKINESIS_SPREAD", 0, 200, 5, vf);
+	}
+	else if(UCS_GetCurrentIter(lightningFX, damageSender, damageReceiver) == 8)
+	{
+		// INSTANT ONE-TIME HIT
+		UCS_Hit(damageSender, damageReceiver, 50, DT_FLY, -1, "", 0);
+	}; */
 };
 
-func int SwitchBySpellID(var int spellID, var int geyser, var int icebolt, var int icecube, var int icelance, 
-var int thunderstorm, var int waterfist, var int whirlwind, var int breathofdeath, var int chargezap, 
-var int deathball, var int deathbolt, var int lightningflash, var int massdeath, var int suckenergy,
-var int zap, var int chargefireball, var int destroyundead, var int firebolt,
-var int firerain, var int firestorm, var int instantfireball)
-{
-	/* if(spellID == SPL_Geyser) { return geyser; };
-	if(spellID == SPL_Icebolt) { return icebolt; };
-	if(spellID == SPL_IceCube) { return icecube; };
-	if(spellID == SPL_IceLance) { return icelance; };
-	if(spellID == SPL_Thunderstorm) { return thunderstorm; };
-	if(spellID == SPL_WaterFist) { return waterfist; };
-	if(spellID == SPL_Whirlwind) { return whirlwind; };
-	if(spellID == SPL_BreathOfDeath) { return breathofdeath; };
-	if(spellID == SPL_ChargeZap) { return chargezap; };
-	if(spellID == SPL_Deathball) { return deathball; };
-	if(spellID == SPL_Deathbolt) { return deathbolt; };
-	if(spellID == SPL_LightningFlash) { return lightningflash; };
-	if(spellID == SPL_MassDeath) { return massdeath; };
-	if(spellID == SPL_SuckEnergy) { return suckenergy; };
-	if(spellID == SPL_Zap) { return zap; };
-	if(spellID == SPL_ChargeFireball) { return chargefireball; };
-	if(spellID == SPL_DestroyUndead) { return destroyundead; };
-	if(spellID == SPL_Firebolt) { return firebolt; };
-	if(spellID == SPL_Firerain) { return firerain; };
-	if(spellID == SPL_Firestorm) { return firestorm; };
-	if(spellID == SPL_InstantFireball) { return instantfireball; }; */
-	
-	return -1;
-};
 
+// CALCULATIONS /////
 
 func int CalcMinimalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialMinimalDamage, var int spellID)
 {
@@ -195,27 +171,19 @@ func int GetProtection(var C_NPC damageSender, var C_NPC damageReceiver, var int
 	
 	return resultProtection;
 };
-
-
-// THE FUNCTIONS BELOW ARE ENGINE-BASED, CHANGING THEM MAY LEAD TO UNPREDICTABLE CONSEQUENCES! /////
-
-func int PullCustomDamageType(var int damageSender_ID, var int damageReceiver_ID, var int itemInstance_ID)
+func int GetCustomDamageType(var C_NPC damageSender, var C_NPC damageReceiver, var int itemInstance_ID)
 {
-	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
-	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
+	var int resultDamageType; resultDamageType = -1;
 	
 	/* if(damageSender.aivar[AIV_MM_REAL_ID] == ID_WARAN || damageSender.aivar[AIV_MM_REAL_ID] == ID_BLOODFLY)
 	{
-		return DT_POISON;
+		resultDamageType = DT_POISON;
 	}; */
 	
-	return -1;
+	return resultDamageType;
 };
-func int PullCustomDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialPureDamage, var int isCrit, var int spellID)
+func int GetCustomDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int initialPureDamage, var int isCrit, var int spellID)
 {
-	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
-	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
-	
 	var int pureDamage; pureDamage = GetPureDamage(damageSender, damageReceiver, damageType, initialPureDamage, spellID);
 	var int protection; protection = GetProtection(damageSender, damageReceiver, damageType, 0, spellID);
 	var int minimalDamage; minimalDamage = GetMinimalDamage(damageSender, damageReceiver, damageType, 0, spellID);
@@ -245,42 +213,70 @@ func int PullCustomDamage(var int damageSender_ID, var int damageReceiver_ID, va
 	return totalDamage;
 };
 
-func int PullMultiplier(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int isCrit)
+
+// ENGINE FUNCTIONS /////
+// FUNCTIONS BELOW ARE CALLED BY THE ENGINE, BE CAREFUL WHEN CHANGING THEM! /////
+
+func void PullPreDamage(var int damageType, var int spellID)
 {
-	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
-	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
+	var C_NPC damageSender; damageSender = UCS_GetDamageSender();
+	var C_NPC damageReceiver; damageReceiver = UCS_GetDamageReceiver();
+	
+	OnPreDamage(damageSender, damageReceiver, damageType, spellID);
+};
+func void PullPostDamage(var int damageType, var int spellID)
+{
+	var C_NPC damageSender; damageSender = UCS_GetDamageSender();
+	var C_NPC damageReceiver; damageReceiver = UCS_GetDamageReceiver();
+	
+	OnPostDamage(damageSender, damageReceiver, damageType, spellID);
+};
+func int PullCustomDamageType(var int itemInstance_ID)
+{
+	var C_NPC damageSender; damageSender = UCS_GetDamageSender();
+	var C_NPC damageReceiver; damageReceiver = UCS_GetDamageReceiver();
+	
+	return GetCustomDamageType(damageSender, damageReceiver, itemInstance_ID);
+};
+func int PullCustomDamage(var int damageType, var int initialPureDamage, var int isCrit, var int spellID)
+{
+	var C_NPC damageSender; damageSender = UCS_GetDamageSender();
+	var C_NPC damageReceiver; damageReceiver = UCS_GetDamageReceiver();
+	
+	return GetCustomDamage(damageSender, damageReceiver, damageType, initialPureDamage, isCrit, spellID);
+};
+func int PullMultiplier(var int damageType, var int isCrit)
+{
+	var C_NPC damageSender; damageSender = UCS_GetDamageSender();
+	var C_NPC damageReceiver; damageReceiver = UCS_GetDamageReceiver();
 	
 	return GetMultiplier(damageSender, damageReceiver, damageType, isCrit);
 };
-
-func int PullMinimalDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialMinimalDamage, var int spellID)
+func int PullMinimalDamage(var int damageType, var int initialMinimalDamage, var int spellID)
 {
-	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
-	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
+	var C_NPC damageSender; damageSender = UCS_GetDamageSender();
+	var C_NPC damageReceiver; damageReceiver = UCS_GetDamageReceiver();
 	
 	return GetMinimalDamage(damageSender, damageReceiver, damageType, initialMinimalDamage, spellID);
 };
-
-func int PullPureDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialPureDamage, var int spellID)
+func int PullPureDamage(var int damageType, var int initialPureDamage, var int spellID)
 {
-	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
-	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
+	var C_NPC damageSender; damageSender = UCS_GetDamageSender();
+	var C_NPC damageReceiver; damageReceiver = UCS_GetDamageReceiver();
 	
 	return GetPureDamage(damageSender, damageReceiver, damageType, initialPureDamage, spellID);
 };
-
-func int PullTotalDamage(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialTotalDamage, var int spellID) 
+func int PullTotalDamage(var int damageType, var int initialTotalDamage, var int spellID) 
 {
-	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
-	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
+	var C_NPC damageSender; damageSender = UCS_GetDamageSender();
+	var C_NPC damageReceiver; damageReceiver = UCS_GetDamageReceiver();
 	
 	return GetTotalDamage(damageSender, damageReceiver, damageType, initialTotalDamage, spellID);
 };
-
-func int PullProtection(var int damageSender_ID, var int damageReceiver_ID, var int damageType, var int initialProtection, var int spellID)
+func int PullProtection(var int damageType, var int initialProtection, var int spellID)
 {
-	var C_NPC damageSender; damageSender = Hlp_GetNpc(damageSender_ID);
-	var C_NPC damageReceiver; damageReceiver = Hlp_GetNpc(damageReceiver_ID);
+	var C_NPC damageSender; damageSender = UCS_GetDamageSender();
+	var C_NPC damageReceiver; damageReceiver = UCS_GetDamageReceiver();
 	
 	return GetProtection(damageSender, damageReceiver, damageType, initialProtection, spellID);
 };
