@@ -1,32 +1,88 @@
 
 
-/* var int lightningFX; */ // FX INSTANCE
+/* var int poisonFX; */ // PROTOTYPE BASED FX INSTANCE
+/* var int lightningFX; */
 /* var int someFX; */
 /* var int anotherFX; */
 
-/* var int thisFX; */
+/* var int burnFX; */ // INLINE FX INSTANCE
 
 
 // ACTIONS /////
 
 func void OnPreDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int spellID)
 {
-	
 };
 func void OnPostDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int damageType, var int spellID)
 {
-	// PROTOTYPE BASED FX
-	/* UCS_StartFX(lightningFX, LightningFXP, damageSender, damageReceiver); */
+	/* if(damageType == DT_MAGIC)
+	{
+		if(spellID == SPL_LIGHTNINGFLASH)
+		{
+			// PROTOTYPE BASED FX
+			UCS_StartFX(lightningFX, LightningFXP, damageSender, damageReceiver);
+		};
+		if(spellID == SPL_Firebolt)
+		{
+			// INLINE FX
+			UCS_RestartFXEX(burnFX, damageSender, damageReceiver, 5, DT_FIRE, -1, "", 0, 2000.0, 5, 2000.0, vf);
+		};
+	}; */
 	
-	/* if (UCS_GetCurrentIter(lightningFX, damageSender, damageReceiver) == 5)
+	/* if(damageType == DT_LIGHTNING)
 	{
-		// INLINE FX
-		UCS_StartFXEX(thisFX, damageSender, damageReceiver, 20, DT_FLY, -1, "SPELLFX_PYROKINESIS_SPREAD", 0, 200, 5, vf);
-	}
-	else if(UCS_GetCurrentIter(lightningFX, damageSender, damageReceiver) == 8)
+		if (UCS_GetCurrentIter(lightningFX, damageSender, damageReceiver) == 2)
+		{
+			// INLINE FX
+			UCS_RefreshFXEX(burnFX, damageSender, damageReceiver, 5, DT_FIRE, -1, "", 0, 2000.0, 5, 2000.0, vf);
+		}
+		if(UCS_GetCurrentIter(lightningFX, damageSender, damageReceiver) == 5)
+		{
+			// INSTANT ONE-TIME HIT
+			UCS_Hit(damageSender, damageReceiver, 50, DT_FLY, -1, "", 0);
+		};
+	}; */
+	
+	/* if(damageType == DT_FIRE)
 	{
-		// INSTANT ONE-TIME HIT
-		UCS_Hit(damageSender, damageReceiver, 50, DT_FLY, -1, "", 0);
+		if(UCS_GetRefreshCount(burnFX, damageSender, damageReceiver) >= 1)
+		{
+			UCS_SetDamage(burnFX, damageSender, damageReceiver, 10);
+			UCS_SetVisualFX(burnFX, damageSender, damageReceiver, "SPELLFX_PYROKINESIS_SPREAD");
+			UCS_SetLoopInterval(burnFX, damageSender, damageReceiver, 1000.0);
+			UCS_SetIterCount(burnFX, damageSender, damageReceiver, 10);
+			UCS_SetStartDelay(burnFX, damageSender, damageReceiver, 1000.0);
+		};
+	}; */
+	
+	/* if(damageType == DT_EDGE)
+	{
+		var int rnd; rnd = Hlp_Random(10) + 1;
+		
+		if(rnd < 3)
+		{
+			// PROTOTYPE BASED FX
+			UCS_RefreshFX(poisonFX, PoisonFXP, damageSender, damageReceiver);
+		};
+	}; */
+	
+	/* if(damageType == DT_POISON)
+	{
+		if(UCS_GetRefreshCount(poisonFX, damageSender, damageReceiver) == 0)
+		{
+			if(UCS_GetCurrentIter(poisonFX, damageSender, damageReceiver) == 10)
+			{
+				UCS_SetDamage(poisonFX, damageSender, damageReceiver, 30);
+			};
+			if(UCS_GetCurrentIter(poisonFX, damageSender, damageReceiver) == 20)
+			{
+				UCS_SetDamage(poisonFX, damageSender, damageReceiver, 50);
+			};
+		};
+		if(UCS_GetRefreshCount(poisonFX, damageSender, damageReceiver) >= 1)
+		{
+			UCS_SetDamage(poisonFX, damageSender, damageReceiver, 50);
+		};
 	}; */
 };
 
@@ -40,7 +96,7 @@ func int CalcMinimalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var
 	var int resultDamage; resultDamage = i;
 	
 	
-	/* resultDamage = SwitchByDT(damageType, i, i, i, i, i, i, i, i, i); */
+	/* resultDamage = SwitchByDT(damageType, i, i, i, i, i, i, i, i, i, i); */
 	
 	return resultDamage;
 };
@@ -54,7 +110,7 @@ func int CalcPureDamage(var C_NPC damageSender, var C_NPC damageReceiver, var in
 	
 	/* if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_STONEGOLEM)
 	{
-		resultDamage = SwitchByDT(damageType, i, Hlp_MultInt(i, 1.10), i, i, i, i, i, i, 0);
+		resultDamage = SwitchByDT(damageType, i, Hlp_MultInt(i, 1.10), i, i, i, i, i, i, 0, i);
 	}; */
 	
 	return resultDamage;
@@ -69,7 +125,7 @@ func int CalcTotalDamage(var C_NPC damageSender, var C_NPC damageReceiver, var i
 	
 	/* if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_STONEGOLEM)
 	{
-		resultDamage = SwitchByDT(damageType, i, Hlp_MultInt(i, 1.50), i, i, i, i, i, i, 0);
+		resultDamage = SwitchByDT(damageType, i, Hlp_MultInt(i, 1.50), i, i, i, i, i, i, 0, i);
 	}; */
 	
 	return resultDamage;
@@ -82,7 +138,7 @@ func int GetProtectionOfEquipment(var C_NPC damageReceiver, var int damageType, 
 	
 	/* if(Hlp_IsItemEquipped(ItAm_PROT_POISON_01, damageReceiver))
 	{
-		resultProtection += SwitchByDT(damageType, 0, 0, 0, 0, 0, 0, 0, 0, 30);
+		resultProtection += SwitchByDT(damageType, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0);
 	}; */
 	
 	return resultProtection;
@@ -102,7 +158,7 @@ func int CalcProtection(var C_NPC damageSender, var C_NPC damageReceiver, var in
 	
 	/* if(damageReceiver.aivar[AIV_MM_REAL_ID] == ID_STONEGOLEM)
 	{
-		resultProtection = SwitchByDT(damageType, i, 0, -1, i, i, i, i, i, i);
+		resultProtection = SwitchByDT(damageType, i, 0, -1, i, i, i, i, i, i, i);
 	}; */
 	
 	/* if(damageType == DT_POISON)
@@ -124,14 +180,30 @@ func int GetMultiplier(var C_NPC damageSender, var C_NPC damageReceiver, var int
 	
 	/* if(!isCrit)
 	{
+		if(damageType == DT_BLUNT)
+		{
+			resultMultiplier = 200; // 0.2x
+		};
 		if(damageType == DT_POISON)
 		{
-			resultMultiplier = 900; // 0.9x
+			resultMultiplier = 1000; // 1.0x
+		};
+		if(damageType == DT_LIGHTNING)
+		{
+			resultMultiplier = 1000; // 1.0x
 		};
 	};
 	if(isCrit)
 	{
+		if(damageType == DT_BLUNT)
+		{
+			resultMultiplier = 1000; // 1.0x
+		};
 		if(damageType == DT_POISON)
+		{
+			resultMultiplier = 1000; // 1.0x
+		};
+		if(damageType == DT_LIGHTNING)
 		{
 			resultMultiplier = 1000; // 1.0x
 		};
@@ -194,11 +266,17 @@ func int GetCustomDamage(var C_NPC damageSender, var C_NPC damageReceiver, var i
 		return 0;
 	};
 	
-	var int totalDamage; totalDamage = 0;
+	var int totalDamage; totalDamage = initialPureDamage;
 	
 	/* if(damageType == DT_POISON)
 	{
-		var int initialTotalDamage; initialTotalDamage = pureDamage + ((damageReceiver.attribute[ATR_HITPOINTS_MAX] - protection) / 10);
+		var int initialTotalDamage; initialTotalDamage = pureDamage + ((damageReceiver.attribute[ATR_HITPOINTS_MAX] - protection) / 100);
+		
+		totalDamage = GetTotalDamage(damageSender, damageReceiver, damageType, initialTotalDamage, spellID);
+	}; */
+	/* if(damageType == DT_LIGHTNING)
+	{
+		var int initialTotalDamage; initialTotalDamage = pureDamage + (damageSender.attribute[ATR_MANA_MAX] / 10);
 		
 		totalDamage = GetTotalDamage(damageSender, damageReceiver, damageType, initialTotalDamage, spellID);
 	}; */

@@ -9,24 +9,30 @@ const int DT_MAGIC = 5;
 const int DT_POINT = 6;
 const int DT_FALL = 7;
 /* const int DT_POISON = 8; */ // CUSTOM DAMAGE TYPE
+/* const int DT_LIGHTNING = 9; */
 
 
 // FX Prototypes (You can add your FX prototypes here) /////
 
-/* const int LightningFXP = 0; */ // FX PROTOTYPE
-/* const int SomeFXP = 1; */
-/* const int AnotherFXP = 2; */
+/* const int PoisonFXP = 0; */ // FX PROTOTYPE
+/* const int LightningFXP = 1; */
+/* const int SomeFXP = 2; */
+/* const int AnotherFXP = 3; */
 
 
-/* func void vf(){}; */ // void exit condition
+func void vf(){}; // void exit condition
 
-/* func int isWeak(var int fxID) // exit condition
+/* func int isSenderWeak(var int fxID) // exit condition
 {
 	// fxID - fx instance
 	// self - damage receiver
 	// other - damage sender
 	
-	if(self.attribute[ATR_HITPOINTS] < self.attribute[ATR_HITPOINTS_MAX] / 5)
+	var int requiredMana;
+	
+	requiredMana = Hlp_MultInt(other.attribute[ATR_MANA_MAX], 0.75);
+	
+	if(other.attribute[ATR_MANA] < requiredMana)
 	{
 		return true;
 	};
@@ -38,15 +44,16 @@ func void UCS_Init()
 {
 	// FX PROTOTYPES MUST BE REGISTERED
 	
-	/* UCS_CreateFXProto(LightningFXP, 10, DT_MAGIC, SPL_LightningFlash, "SPELLFX_LIGHTNINGFLASH_TARGET_CLOUD", 0, 1500, 10, isWeak); */
-	/* UCS_CreateFXProto(SomeFXP, 2, DT_BLUNT, -1, "", 1, 100, 75, vf); */
-	/* UCS_CreateFXProto(AnotherFXP, 300, DT_FLY, -1, "", 0, 8000, 3, vf); */
+	/* UCS_CreateFXProto(PoisonFXP, 10, DT_POISON, -1, "SPELLFX_LIGHTSTAR_RED", 0, 1000.0, 30, 1000.0, vf); */
+	/* UCS_CreateFXProto(LightningFXP, 15, DT_LIGHTNING, -1, "SPELLFX_LIGHTNINGFLASH_TARGET_CLOUD", 1, 300.0, 5, 0.0, isSenderWeak); */
+	/* UCS_CreateFXProto(SomeFXP, 2, DT_BLUNT, -1, "", 1, 100, 75, 1750.0, vf); */
+	/* UCS_CreateFXProto(AnotherFXP, 300, DT_FLY, -1, "", 0, 8000, 3, 3000.0, vf); */
 };
 
 
 // SWITCHERS /////
 
-func int SwitchByDT(var int damageType, var int barrier, var int blunt, var int edge, var int fire, var int fly, var int magic, var int point, var int fall, var int poison)
+func int SwitchByDT(var int damageType, var int barrier, var int blunt, var int edge, var int fire, var int fly, var int magic, var int point, var int fall, var int poison, var int lightning)
 {
 	/* if(damageType == DT_BARRIER){ return barrier; };
 	if(damageType == DT_BLUNT){ return blunt; };
@@ -56,7 +63,8 @@ func int SwitchByDT(var int damageType, var int barrier, var int blunt, var int 
 	if(damageType == DT_MAGIC){ return magic; };
 	if(damageType == DT_POINT){ return point; };
 	if(damageType == DT_FALL){ return fall; };
-	if(damageType == DT_POISON){ return poison; }; */
+	if(damageType == DT_POISON){ return poison; };
+	if(damageType == DT_LIGHTNING){ return lightning; }; */
 	
 	return -1;
 };
