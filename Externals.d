@@ -6,7 +6,7 @@
 // --------------------------------------------------------------------------------
 // 1. CORE EFFECT CREATION
 // --------------------------------------------------------------------------------
-func void UCS_CreateFXProto(var int fxPrototype, var int damage, var int damageIndex, var int spellID, var string visualFXName, var int dontKill, var float loopInterval, var int iterationCount, var func exitCondition);
+func void UCS_CreateFXProto(var int fxPrototype, var int damage, var int damageIndex, var int spellID, var string visualFXName, var int dontKill, var float loopInterval, var int iterationCount, var float startDelay, var func exitCondition);
 func void UCS_Hit(var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var string visualFXName, var int dontKill);
 func void UCS_StartFX(var int fxInstance, var int fxPrototype, var C_NPC damageSender, var C_NPC damageReceiver);
 func void UCS_StartFXEX(var int fxInstance, var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var string visualFXName, var int dontKill, var float loopInterval, var int iterationCount, var float startDelay, var func exitCondition);
