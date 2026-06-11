@@ -33,9 +33,9 @@ func void UCS_Init()
     // The engine automatically invokes this function during game startup.
     // This is the CORRECT and SAFE place to register your FX Prototypes!
     
-    UCS_CreateFXProto( MyPoisonFXP,  10, DT_POISON, -1, "", 0, 1000.0, 5, 1000.0, vf );
-    UCS_CreateFXProto( MyLightningFXP, 100, DT_LIGHTNING, -1, "SPELLFX_LIGHTNINGFLASH_TARGET_CLOUD", 1, 300.0, 3, 0.0, isParalyzed );
-    UCS_CreateFXProto( MyBurnFXP,    25, DT_FIRE,  -1, "",   1, 500.0,  10, 5000.0, vf );
+    UCS_CreateFXProto( MyPoisonFXP,  10, DT_POISON, -1, -1, "", 0, 1000.0, 5, 1000.0, vf );
+    UCS_CreateFXProto( MyLightningFXP, 100, DT_LIGHTNING, -1, -1, "SPELLFX_LIGHTNINGFLASH_TARGET_CLOUD", 1, 300.0, 3, 0.0, isParalyzed );
+    UCS_CreateFXProto( MyBurnFXP,    25, DT_FIRE,  -1, -1, "",   1, 500.0,  10, 5000.0, vf );
 };
 
 
@@ -45,27 +45,29 @@ func void UCS_Init()
 1. CORE EFFECT CREATION
 --------------------------------------------------------------------------------
 
-/* UCS_CreateFXProto(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+/* UCS_CreateFXProto(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
     1: FxPrototype- [int] Reference to the declared FX Prototype (must be constant! e.g: const int LightningFXP = 0;)
     2: damage        - [int] Amount of damage per iteration
     3: damageIndex   - [int] Damage type index (can be custom)
     4: spellID       - [int] Associated spell ID (-1 if none)
-    5: visualFXName  - [string] Name of PFX/VisualFX to play on target
-    6: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
-    7: loopInterval  - [float] Time between ticks in milliseconds (min 100.0)
-    8: iterationCount- [int] Total number of damage ticks (-1 for infinite)
-    9: startDelay    - [float] Total delay before the ticks start (-1.0 or 0.0 if none)
-    10: exitCondition - [func] Daedalus function name acting as early stop condition (any void function if none, 'vf' by default)
+    5: spellLevel       - [int] Associated spell level (-1 if none)
+    6: visualFXName  - [string] Name of PFX/VisualFX to play on target
+    7: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
+    8: loopInterval  - [float] Time between ticks in milliseconds (min 100.0)
+    9: iterationCount- [int] Total number of damage ticks (-1 for infinite)
+    10: startDelay    - [float] Total delay before the ticks start (-1.0 or 0.0 if none)
+    11: exitCondition - [func] Daedalus function name acting as early stop condition (any void function if none, 'vf' by default)
     Returns: [void]. Registers a new FX PROTOTYPE and attaches it to the ref.
 */
-/* UCS_Hit(1, 2, 3, 4, 5, 6, 7)
+/* UCS_Hit(1, 2, 3, 4, 5, 6, 7, 8)
     1: damageSender  - [instance/C_NPC] Attacker instance
     2: damageReceiver- [instance/C_NPC] Victim instance
     3: damage        - [int] Amount of one-time damage
     4: damageIndex   - [int] Damage type index (can be custom)
     5: spellID       - [int] Associated spell ID (-1 if none)
-    6: visualFXName  - [string] Name of PFX/VisualFX to play on target
-    7: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
+    6: spellLevel       - [int] Associated spell level (-1 if none)
+    7: visualFXName  - [string] Name of PFX/VisualFX to play on target
+    8: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
     Returns: [void]. Immediately deals damage.
 */
 
@@ -77,19 +79,20 @@ func void UCS_Init()
     Returns: [void]. Starts prototype-based FX. Idempotent (ignores active).
 */
 
-/* UCS_StartFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+/* UCS_StartFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
     1: fxInstance - [int] Reference to the declared FX Instance
     2: damageSender  - [instance/C_NPC] Attacker instance
     3: damageReceiver- [instance/C_NPC] Victim instance
     4: damage        - [int] Amount of one-time damage
     5: damageIndex   - [int] Damage type index (can be custom)
     6: spellID       - [int] Associated spell ID (-1 if none)
-    7: visualFXName  - [string] Name of PFX/VisualFX to play on target
-    8: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
-    9: loopInterval  - [float] Time between ticks in milliseconds (min 100.0)
-    10: iterationCount- [int] Total number of damage ticks (-1 for infinite)
-    11: startDelay    - [float] Total delay before the ticks start (-1.0 or 0.0 if none)
-    12: exitCondition - [func] Daedalus function name acting as early stop condition (any void function if none, 'vf' by default)
+    7: spellLevel       - [int] Associated spell level (-1 if none)
+    8: visualFXName  - [string] Name of PFX/VisualFX to play on target
+    9: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
+    10: loopInterval  - [float] Time between ticks in milliseconds (min 100.0)
+    11: iterationCount- [int] Total number of damage ticks (-1 for infinite)
+    12: startDelay    - [float] Total delay before the ticks start (-1.0 or 0.0 if none)
+    13: exitCondition - [func] Daedalus function name acting as early stop condition (any void function if none, 'vf' by default)
     Returns: [void]. Starts inline FX. Idempotent (ignores active).
 */
 
@@ -101,19 +104,20 @@ func void UCS_Init()
     Returns: [void]. Starts/refreshes prototype-based FX. Keeps runtime params (resets current iteration only). Non-idempotent.
 */
 
-/* UCS_RefreshFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+/* UCS_RefreshFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
     1: fxInstance - [int] Reference to the declared FX Instance
     2: damageSender  - [instance/C_NPC] Attacker instance
     3: damageReceiver- [instance/C_NPC] Victim instance
     4: damage        - [int] Amount of one-time damage
     5: damageIndex   - [int] Damage type index (can be custom)
     6: spellID       - [int] Associated spell ID (-1 if none)
-    7: visualFXName  - [string] Name of PFX/VisualFX to play on target
-    8: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
-    9: loopInterval  - [float] Time between ticks in milliseconds (min 100.0)
-    10: iterationCount- [int] Total number of damage ticks (-1 for infinite)
-    11: startDelay    - [float] Total delay before the ticks start (-1.0 or 0.0 if none)
-    12: exitCondition - [func] Daedalus function name acting as early stop condition (any void function if none, 'vf' by default)
+    7: spellLevel       - [int] Associated spell level (-1 if none)
+    8: visualFXName  - [string] Name of PFX/VisualFX to play on target
+    9: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
+    10: loopInterval  - [float] Time between ticks in milliseconds (min 100.0)
+    11: iterationCount- [int] Total number of damage ticks (-1 for infinite)
+    12: startDelay    - [float] Total delay before the ticks start (-1.0 or 0.0 if none)
+    13: exitCondition - [func] Daedalus function name acting as early stop condition (any void function if none, 'vf' by default)
     Returns: [void]. Starts/refreshes inline FX. Keeps runtime params (resets current iteration only). Non-idempotent.
 */
 
@@ -125,19 +129,20 @@ func void UCS_Init()
     Returns: [void]. Starts/restarts prototype-based FX. Resets runtime params to default. Non-idempotent.
 */
 
-/* UCS_RestartFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+/* UCS_RestartFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
     1: fxInstance - [int] Reference to the declared FX Instance
     2: damageSender  - [instance/C_NPC] Attacker instance
     3: damageReceiver- [instance/C_NPC] Victim instance
     4: damage        - [int] Amount of one-time damage
     5: damageIndex   - [int] Damage type index (can be custom)
     6: spellID       - [int] Associated spell ID (-1 if none)
-    7: visualFXName  - [string] Name of PFX/VisualFX to play on target
-    8: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
-    9: loopInterval  - [float] Time between ticks in milliseconds (min 100.0)
-    10: iterationCount- [int] Total number of damage ticks (-1 for infinite)
-    11: startDelay    - [float] Total delay before the ticks start (-1.0 or 0.0 if none)
-    12: exitCondition - [func] Daedalus function name acting as early stop condition (any void function if none, 'vf' by default)
+    7: spellLevel       - [int] Associated spell level (-1 if none)
+    8: visualFXName  - [string] Name of PFX/VisualFX to play on target
+    9: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
+    10: loopInterval  - [float] Time between ticks in milliseconds (min 100.0)
+    11: iterationCount- [int] Total number of damage ticks (-1 for infinite)
+    12: startDelay    - [float] Total delay before the ticks start (-1.0 or 0.0 if none)
+    13: exitCondition - [func] Daedalus function name acting as early stop condition (any void function if none, 'vf' by default)
     Returns: [void]. Starts/restarts inline FX. Resets runtime params to default. Non-idempotent.
 */
 
@@ -181,6 +186,11 @@ All getters require explicit fxInstance + sender + receiver matching for safety.
 /* UCS_GetSpellID(1, 2, 3)
     1: fxInstance, 2: damageSender, 3: damageReceiver
     Returns: [int]. Current embedded spell ID; -1 otherwise.
+*/
+
+/* UCS_GetSpellLevel(1, 2, 3)
+    1: fxInstance, 2: damageSender, 3: damageReceiver
+    Returns: [int]. Current embedded spell level; -1 otherwise.
 */
 
 /* UCS_GetVisualFX(1, 2, 3)
@@ -244,6 +254,11 @@ This only works during direct damage application! Therefore, the setters won't a
 /* UCS_SetSpellID(1, 2, 3, 4)
     1: fxInstance, 2: damageSender, 3: damageReceiver
     4: newSpellID    - [int] Modifies spellID for upcoming FX iterations.
+*/
+
+/* UCS_SetSpellLevel(1, 2, 3, 4)
+    1: fxInstance, 2: damageSender, 3: damageReceiver
+    4: newSpellLevel    - [int] Modifies spellLevel for upcoming FX iterations.
 */
 
 /* UCS_SetVisualFX(1, 2, 3, 4)

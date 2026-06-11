@@ -44,10 +44,10 @@ func void UCS_Init()
 {
 	// FX PROTOTYPES MUST BE REGISTERED
 	
-	/* UCS_CreateFXProto(PoisonFXP, 10, DT_POISON, -1, "SPELLFX_LIGHTSTAR_RED", 0, 1000.0, 30, 1000.0, vf); */
-	/* UCS_CreateFXProto(LightningFXP, 15, DT_LIGHTNING, -1, "SPELLFX_LIGHTNINGFLASH_TARGET_CLOUD", 1, 300.0, 5, 0.0, isSenderWeak); */
-	/* UCS_CreateFXProto(SomeFXP, 2, DT_BLUNT, -1, "", 1, 100, 75, 1750.0, vf); */
-	/* UCS_CreateFXProto(AnotherFXP, 300, DT_FLY, -1, "", 0, 8000, 3, 3000.0, vf); */
+	/* UCS_CreateFXProto(PoisonFXP, 10, DT_POISON, -1, -1, "SPELLFX_LIGHTSTAR_RED", 0, 1000.0, 30, 1000.0, vf); */
+	/* UCS_CreateFXProto(LightningFXP, 15, DT_LIGHTNING, -1, -1, "SPELLFX_LIGHTNINGFLASH_TARGET_CLOUD", 1, 300.0, 5, 0.0, isSenderWeak); */
+	/* UCS_CreateFXProto(SomeFXP, 2, DT_BLUNT, -1, -1, "", 1, 100, 75, 1750.0, vf); */
+	/* UCS_CreateFXProto(AnotherFXP, 300, DT_FLY, -1, -1, "", 0, 8000, 3, 3000.0, vf); */
 };
 
 
