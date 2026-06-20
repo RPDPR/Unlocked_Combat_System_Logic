@@ -22,6 +22,14 @@ func void OnPostDamage(var C_NPC damageSender, var C_NPC damageReceiver, var int
 			// PROTOTYPE BASED FX
 			UCS_StartFX(lightningFX, LightningFXP, damageSender, damageReceiver);
 		};
+		if(spellID == SPL_CHARGEZAP)
+		{
+			if(spellLevel == 4)
+			{
+				// PROTOTYPE BASED AREA FX
+				UCS_StartAreaFX(lightningFX, LightningFXP, 300, isLightningFXAreaIncludes, damageSender, damageReceiver);
+			};
+		};
 		if(spellID == SPL_Firebolt)
 		{
 			// INLINE FX
