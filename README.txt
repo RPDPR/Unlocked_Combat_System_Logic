@@ -154,7 +154,7 @@ func void UCS_Init()
 */
 
 /* UCS_AreaHit(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
-    1: areaRadius      - [float] Radius around damageReceiver used to capture targets
+    1: areaRadius      - [int] Radius around damageReceiver used to capture targets
     2: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
     3: damageSender    - [instance/C_NPC] Attacker instance
     4: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
@@ -170,7 +170,7 @@ func void UCS_Init()
 /* UCS_StartAreaFX(1, 2, 3, 4, 5, 6)
     1: fxInstance      - [int] Reference to the declared FX Instance (must be variable! e.g: var int lightningFX;)
     2: FxPrototype     - [int] Pre-created CONST INT reference registered via UCS_CreateFXProto
-    3: areaRadius      - [float] Radius around damageReceiver used to capture targets
+    3: areaRadius      - [int] Radius around damageReceiver used to capture targets
     4: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
     5: damageSender    - [instance/C_NPC] Attacker instance
     6: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
@@ -179,7 +179,7 @@ func void UCS_Init()
 
 /* UCS_StartAreaFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
     1: fxInstance      - [int] Reference to the declared FX Instance
-    2: areaRadius      - [float] Radius around damageReceiver used to capture targets
+    2: areaRadius      - [int] Radius around damageReceiver used to capture targets
     3: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
     4: damageSender    - [instance/C_NPC] Attacker instance
     5: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
@@ -199,7 +199,7 @@ func void UCS_Init()
 /* UCS_RefreshAreaFX(1, 2, 3, 4, 5, 6)
     1: fxInstance      - [int] Reference to the declared FX Instance
     2: FxPrototype     - [int] Pre-created CONST INT reference registered via UCS_CreateFXProto
-    3: areaRadius      - [float] Radius around damageReceiver used to capture targets
+    3: areaRadius      - [int] Radius around damageReceiver used to capture targets
     4: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
     5: damageSender    - [instance/C_NPC] Attacker instance
     6: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
@@ -208,7 +208,7 @@ func void UCS_Init()
 
 /* UCS_RefreshAreaFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
     1: fxInstance      - [int] Reference to the declared FX Instance
-    2: areaRadius      - [float] Radius around damageReceiver used to capture targets
+    2: areaRadius      - [int] Radius around damageReceiver used to capture targets
     3: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
     4: damageSender    - [instance/C_NPC] Attacker instance
     5: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
@@ -228,7 +228,7 @@ func void UCS_Init()
 /* UCS_RestartAreaFX(1, 2, 3, 4, 5, 6)
     1: fxInstance      - [int] Reference to the declared FX Instance
     2: FxPrototype     - [int] Pre-created CONST INT reference registered via UCS_CreateFXProto
-    3: areaRadius      - [float] Radius around damageReceiver used to capture targets
+    3: areaRadius      - [int] Radius around damageReceiver used to capture targets
     4: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
     5: damageSender    - [instance/C_NPC] Attacker instance
     6: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
@@ -237,7 +237,7 @@ func void UCS_Init()
 
 /* UCS_RestartAreaFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
     1: fxInstance      - [int] Reference to the declared FX Instance
-    2: areaRadius      - [float] Radius around damageReceiver used to capture targets
+    2: areaRadius      - [int] Radius around damageReceiver used to capture targets
     3: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
     4: damageSender    - [instance/C_NPC] Attacker instance
     5: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
@@ -256,7 +256,7 @@ func void UCS_Init()
 
 /* UCS_StopAreaFX(1, 2, 3, 4, 5)
     1: fxInstance      - [int] Reference to the declared FX Instance
-    2: areaRadius      - [float] Radius around damageReceiver used to capture targets
+    2: areaRadius      - [int] Radius around damageReceiver used to capture targets
     3: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
     4: damageSender    - [instance/C_NPC] Attacker instance
     5: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
@@ -269,9 +269,24 @@ func void UCS_Init()
 --------------------------------------------------------------------------------
 All getters require explicit fxInstance + sender + receiver matching for safety. 
 
+/* UCS_HasSender(1, 2)
+    1: fxInstance, 2: damageSender
+    Returns: [int]. 1 if the effect is currently attached to this damageSender; 0 otherwise.
+*/
+
+/* UCS_HasReceiver(1, 2)
+    1: fxInstance, 2: damageReceiver
+    Returns: [int]. 1 if the effect is currently attached to this damageReceiver; 0 otherwise.
+*/
+
 /* UCS_IsRunning(1, 2, 3)
     1: fxInstance, 2: damageSender, 3: damageReceiver
     Returns: [int]. 1 if the effect is currently active; 0 otherwise.
+*/
+
+/* UCS_IsApplying(1, 2, 3)
+    1: fxInstance, 2: damageSender, 3: damageReceiver
+    Returns: [int]. 1 if the effect is currently applying; 0 otherwise.
 */
 
 /* UCS_IsCompleted(1, 2, 3)

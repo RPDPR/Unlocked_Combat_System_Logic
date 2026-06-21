@@ -17,19 +17,22 @@ func void UCS_RestartFX(var int fxInstance, var int fxPrototype, var C_NPC damag
 func void UCS_RestartFXEX(var int fxInstance, var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var int spellLevel, var string visualFXName, var int dontKill, var float loopInterval, var int iterationCount, var float startDelay, var func exitCondition);
 func void UCS_StopFX(var int fxInstance, var C_NPC damageSender, var C_NPC damageReceiver);
 
-func void UCS_AreaHit(var float areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var int spellLevel, var string visualFXName, var int dontKill);
-func void UCS_StartAreaFX(var int fxInstance, var int fxPrototype, var float areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver);
-func void UCS_StartAreaFXEX(var int fxInstance, var float areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var int spellLevel, var string visualFXName, var int dontKill, var float loopInterval, var int iterationCount, var float startDelay, var func exitCondition);
-func void UCS_RefreshAreaFX(var int fxInstance, var int fxPrototype, var float areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver);
-func void UCS_RefreshAreaFXEX(var int fxInstance, var float areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var int spellLevel, var string visualFXName, var int dontKill, var float loopInterval, var int iterationCount, var float startDelay, var func exitCondition);
-func void UCS_RestartAreaFX(var int fxInstance, var int fxPrototype, var float areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver);
-func void UCS_RestartAreaFXEX(var int fxInstance, var float areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var int spellLevel, var string visualFXName, var int dontKill, var float loopInterval, var int iterationCount, var float startDelay, var func exitCondition);
-func void UCS_StopAreaFX(var int fxInstance, var float areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver);
+func void UCS_AreaHit(var int areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var int spellLevel, var string visualFXName, var int dontKill);
+func void UCS_StartAreaFX(var int fxInstance, var int fxPrototype, var int areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver);
+func void UCS_StartAreaFXEX(var int fxInstance, var int areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var int spellLevel, var string visualFXName, var int dontKill, var float loopInterval, var int iterationCount, var float startDelay, var func exitCondition);
+func void UCS_RefreshAreaFX(var int fxInstance, var int fxPrototype, var int areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver);
+func void UCS_RefreshAreaFXEX(var int fxInstance, var int areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var int spellLevel, var string visualFXName, var int dontKill, var float loopInterval, var int iterationCount, var float startDelay, var func exitCondition);
+func void UCS_RestartAreaFX(var int fxInstance, var int fxPrototype, var int areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver);
+func void UCS_RestartAreaFXEX(var int fxInstance, var int areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver, var int damage, var int damageIndex, var int spellID, var int spellLevel, var string visualFXName, var int dontKill, var float loopInterval, var int iterationCount, var float startDelay, var func exitCondition);
+func void UCS_StopAreaFX(var int fxInstance, var int areaRadius, var func includeCondition, var C_NPC damageSender, var C_NPC damageReceiver);
 
 // --------------------------------------------------------------------------------
 // 2. RUNTIME CONTEXT INSPECTION (GETTERS)
 // --------------------------------------------------------------------------------
+func int   UCS_HasSender(var int fxInstance, var C_NPC damageSender);
+func int   UCS_HasReceiver(var int fxInstance, var C_NPC damageReceiver);
 func int   UCS_IsRunning(var int fxInstance, var C_NPC damageSender, var C_NPC damageReceiver);
+func int   UCS_IsApplying(var int fxInstance, var C_NPC damageSender, var C_NPC damageReceiver);
 func int   UCS_IsCompleted(var int fxInstance, var C_NPC damageSender, var C_NPC damageReceiver);
 func int   UCS_GetRefreshCount(var int fxInstance, var C_NPC damageSender, var C_NPC damageReceiver);
 func int   UCS_GetDamage(var int fxInstance, var C_NPC damageSender, var C_NPC damageReceiver);

@@ -1,0 +1,9 @@
+
+UCS\Consts_g2a.d
+UCS\FX\FXProto\LightningFXP.d
+UCS\FX\FXProto\PoisonFXP.d
+UCS\FX\FXProto\Init.d
+UCS\FX\lightningFX.d
+UCS\FX\burnFX.d
+UCS\FX\poisonFX.d
+UCS\OnDamage_g2a.d

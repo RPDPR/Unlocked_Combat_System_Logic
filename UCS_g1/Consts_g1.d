@@ -12,62 +12,6 @@ const int DT_FALL = 7;
 /* const int DT_LIGHTNING = 9; */
 
 
-// FX Prototypes (You can add your FX prototypes here) /////
-
-/* const int PoisonFXP = 0; */ // FX PROTOTYPE
-/* const int LightningFXP = 1; */
-/* const int SomeFXP = 2; */
-/* const int AnotherFXP = 3; */
-
-
-func int ff(){ return false; }; // false function
-
-/* func int isSenderWeak(var int fxID) // exit condition
-{
-	// fxID - fx instance
-	// self - damage receiver
-	// other - damage sender
-	
-	var int requiredMana;
-	
-	requiredMana = Hlp_MultInt(other.attribute[ATR_MANA_MAX], 0.75);
-	
-	if(other.attribute[ATR_MANA] < requiredMana)
-	{
-		return true;
-	};
-	
-	return false;
-}; */
-
-func int tf(){ return true; }; // true function
-
-/* func int isLightningFXAreaIncludes(var int fxID) // include condition
-{
-	// fxID - fx instance
-	// self - damage receiver
-	// other - damage sender
-	
-	if(Npc_IsPlayer(self))
-	{
-		return false;
-	};
-	
-	return true;
-}; */
-
-
-func void UCS_Init()
-{
-	// FX PROTOTYPES MUST BE REGISTERED
-	
-	/* UCS_CreateFXProto(PoisonFXP, 10, DT_POISON, -1, -1, "SPELLFX_LIGHTSTAR_RED", 0, 1000.0, 30, 1000.0, ff); */
-	/* UCS_CreateFXProto(LightningFXP, 15, DT_LIGHTNING, -1, -1, "SPELLFX_LIGHTNINGFLASH_TARGET_CLOUD", 1, 300.0, 5, 0.0, isSenderWeak); */
-	/* UCS_CreateFXProto(SomeFXP, 2, DT_BLUNT, -1, -1, "", 1, 100, 75, 1750.0, ff); */
-	/* UCS_CreateFXProto(AnotherFXP, 300, DT_FLY, -1, -1, "", 0, 8000, 3, 3000.0, ff); */
-};
-
-
 // SWITCHERS /////
 
 func int SwitchByDT(var int damageType, var int barrier, var int blunt, var int edge, var int fire, var int fly, var int magic, var int point, var int fall, var int poison, var int lightning)
@@ -113,6 +57,16 @@ var int firerain, var int firestorm, var int instantfireball)
 	if(spellID == SPL_Firerain) { return firerain; };
 	if(spellID == SPL_Firestorm) { return firestorm; };
 	if(spellID == SPL_InstantFireball) { return instantfireball; }; */
+	
+	return -1;
+};
+
+func int SwitchBySpellLevel(var int spellLevel, var int first, var int second, var int third, var int fourth)
+{
+	/* if(spellLevel == 1) { return first; };
+	if(spellLevel == 2) { return second; };
+	if(spellLevel == 3) { return third; };
+	if(spellLevel == 4) { return fourth; }; */
 	
 	return -1;
 };
