@@ -9,12 +9,11 @@ const int DT_MAGIC = 5;
 const int DT_POINT = 6;
 const int DT_FALL = 7;
 /* const int DT_POISON = 8; */ // CUSTOM DAMAGE TYPE
-/* const int DT_LIGHTNING = 9; */
 
 
 // SWITCHERS /////
 
-func int SwitchByDT(var int damageType, var int barrier, var int blunt, var int edge, var int fire, var int fly, var int magic, var int point, var int fall, var int poison, var int lightning)
+func int SwitchByDT(var int damageType, var int barrier, var int blunt, var int edge, var int fire, var int fly, var int magic, var int point, var int fall, var int poison)
 {
 	/* if(damageType == DT_BARRIER){ return barrier; };
 	if(damageType == DT_BLUNT){ return blunt; };
@@ -24,8 +23,7 @@ func int SwitchByDT(var int damageType, var int barrier, var int blunt, var int 
 	if(damageType == DT_MAGIC){ return magic; };
 	if(damageType == DT_POINT){ return point; };
 	if(damageType == DT_FALL){ return fall; };
-	if(damageType == DT_POISON){ return poison; };
-	if(damageType == DT_LIGHTNING){ return lightning; }; */
+	if(damageType == DT_POISON){ return poison; }; */
 	
 	return -1;
 };

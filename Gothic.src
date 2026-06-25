@@ -1,9 +1,21 @@
 
+//STORY\NPC\*.d
+//STORY\NPC\Monster\*.d
+//STORY\NPC\Orc\*.d
+
 UCS\Consts_g2a.d
-UCS\FX\FXProto\LightningFXP.d
-UCS\FX\FXProto\PoisonFXP.d
-UCS\FX\FXProto\Init.d
-UCS\FX\lightningFX.d
-UCS\FX\burnFX.d
-UCS\FX\poisonFX.d
+
+UCS\FXLib\FireSpell\FireSpell_Consts.d
+UCS\FXLib\FireSpell\Afterburn\FX\AfterburnFX.d
+UCS\FXLib\FireSpell\Afterburn\Afterburn_Proc.d
+UCS\FXLib\FireSpell\FX\FireSpellFX.d
+UCS\FXLib\FireSpell\FireSpell_Proc.d
+UCS\FXLib\FXLib_Proc.d
+
+// --------------
+// Project files
+// --------------
+
 UCS\OnDamage_g2a.d
+
+//STORY\Startup.d

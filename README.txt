@@ -1,18 +1,14 @@
 ================================================================================
-UNLOCKED COMBAT SYSTEM (UCS) v2.0
+UNLOCKED COMBAT SYSTEM (UCS) v2.4
 Copyright (c) 2026 RPD. All rights reserved.
 ================================================================================
 HI, DEAR DEVELOPER! Thank you for choosing UCS plugin as your primary tool
 for advanced damage pipeline management in ZenGin-based games, like Gothic I, Gothic II NoTR and their mods!
-
-UCS (Unlocked Combat System) v2.0 is a major update that significantly expands 
-the plugin's core functionality, adding an active standalone EFFECTS ENGINE on top of the 
-robust damage pipeline hooks.
 ================================================================================
 
-[ ABOUT UCS v2.0 ]
+[ ABOUT UCS v2.4 ]
 
-The plugin now supports:
+The plugin supports:
 - Passive pipeline hooks for damage interception (legacy v1.0).
 - Instant and Loop (periodic) custom damage generation.
 - Complete lifecycle management of internal effect contexts (ctx).
@@ -22,22 +18,6 @@ The plugin now supports:
 
 Below is the list of all available script functions with their argument layouts, which should help you with your majestic stuff.
 
---------------------------------------------------------------------------------
-0. SYSTEM INITIALIZATION & STARTUP
---------------------------------------------------------------------------------
-To ensure everything loads in the correct engine state, UCS exposes a dedicated 
-startup callback function that is automatically triggered by the core.
-
-func void UCS_Init()
-{
-    // The engine automatically invokes this function during game startup.
-    // This is the CORRECT and SAFE place to register your FX Prototypes!
-    
-    UCS_CreateFXProto( MyPoisonFXP,  10, DT_POISON, -1, -1, "", 0, 1000.0, 5, 1000.0, vf );
-    UCS_CreateFXProto( MyLightningFXP, 100, DT_LIGHTNING, -1, -1, "SPELLFX_LIGHTNINGFLASH_TARGET_CLOUD", 1, 300.0, 3, 0.0, isParalyzed );
-    UCS_CreateFXProto( MyBurnFXP,    25, DT_FIRE,  -1, -1, "",   1, 500.0,  10, 5000.0, vf );
-};
-
 
 [ DAEDALUS EXTERNALS REFERENCE: UCS_PACKET ]
 
@@ -45,20 +25,6 @@ func void UCS_Init()
 1. CORE EFFECT CREATION
 --------------------------------------------------------------------------------
 
-/* UCS_CreateFXProto(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
-    1: FxPrototype- [int] Reference to the declared FX Prototype (must be constant! e.g: const int LightningFXP = 0;)
-    2: damage        - [int] Amount of damage
-    3: damageIndex   - [int] Damage type index (can be custom)
-    4: spellID       - [int] Associated spell ID (-1 if none)
-    5: spellLevel       - [int] Associated spell level (-1 if none)
-    6: visualFXName  - [string] Name of PFX/VisualFX to play on target
-    7: dontKill      - [int] Boolean (0/1). If 1, damage won't instantly kill target
-    8: loopInterval  - [float] Time between ticks in milliseconds (min 100.0)
-    9: iterationCount- [int] Total number of damage ticks (-1 for infinite)
-    10: startDelay    - [float] Total delay before the ticks start (-1.0 or 0.0 if none)
-    11: exitCondition - [func] Daedalus function name acting as early stop condition (any false function if none, 'ff')
-    Returns: [void]. Registers a new FX PROTOTYPE and attaches it to the ref.
-*/
 /* UCS_Hit(1, 2, 3, 4, 5, 6, 7, 8)
     1: damageSender  - [instance/C_NPC] Attacker instance
     2: damageReceiver- [instance/C_NPC] Victim instance
@@ -71,15 +37,7 @@ func void UCS_Init()
     Returns: [void]. Immediately deals damage.
 */
 
-/* UCS_StartFX(1, 2, 3, 4)
-    1: fxInstance - [int] Reference to the declared FX Instance (must be variable! e.g: var int lightningFX;)
-    2: FxPrototype- [int] Pre-created CONST INT reference registered via UCS_CreateFXProto
-    3: damageSender  - [instance/C_NPC] Attacker instance
-    4: damageReceiver- [instance/C_NPC] Victim instance
-    Returns: [void]. Starts prototype-based FX. Idempotent (ignores active).
-*/
-
-/* UCS_StartFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+/* UCS_StartFX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
     1: fxInstance - [int] Reference to the declared FX Instance
     2: damageSender  - [instance/C_NPC] Attacker instance
     3: damageReceiver- [instance/C_NPC] Victim instance
@@ -96,15 +54,7 @@ func void UCS_Init()
     Returns: [void]. Starts inline FX. Idempotent (ignores active).
 */
 
-/* UCS_RefreshFX(1, 2, 3, 4)
-    1: fxInstance - [int] Reference to the declared FX Instance
-    2: FxPrototype- [int] Pre-created CONST INT reference registered via UCS_CreateFXProto
-    3: damageSender  - [instance/C_NPC] Attacker instance
-    4: damageReceiver- [instance/C_NPC] Victim instance
-    Returns: [void]. Starts/refreshes prototype-based FX. Keeps runtime params (resets current iteration only). Non-idempotent.
-*/
-
-/* UCS_RefreshFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+/* UCS_RefreshFX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
     1: fxInstance - [int] Reference to the declared FX Instance
     2: damageSender  - [instance/C_NPC] Attacker instance
     3: damageReceiver- [instance/C_NPC] Victim instance
@@ -121,15 +71,7 @@ func void UCS_Init()
     Returns: [void]. Starts/refreshes inline FX. Keeps runtime params (resets current iteration only). Non-idempotent.
 */
 
-/* UCS_RestartFX(1, 2, 3, 4)
-    1: fxInstance - [int] Reference to the declared FX Instance
-    2: FxPrototype- [int] Pre-created CONST INT reference registered via UCS_CreateFXProto
-    3: damageSender  - [instance/C_NPC] Attacker instance
-    4: damageReceiver- [instance/C_NPC] Victim instance
-    Returns: [void]. Starts/restarts prototype-based FX. Resets runtime params to default. Non-idempotent.
-*/
-
-/* UCS_RestartFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+/* UCS_RestartFX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
     1: fxInstance - [int] Reference to the declared FX Instance
     2: damageSender  - [instance/C_NPC] Attacker instance
     3: damageReceiver- [instance/C_NPC] Victim instance
@@ -167,17 +109,7 @@ func void UCS_Init()
     Returns: [void]. Immediately deals damage to all captured targets.
 */
 
-/* UCS_StartAreaFX(1, 2, 3, 4, 5, 6)
-    1: fxInstance      - [int] Reference to the declared FX Instance (must be variable! e.g: var int lightningFX;)
-    2: FxPrototype     - [int] Pre-created CONST INT reference registered via UCS_CreateFXProto
-    3: areaRadius      - [int] Radius around damageReceiver used to capture targets
-    4: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
-    5: damageSender    - [instance/C_NPC] Attacker instance
-    6: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
-    Returns: [void]. Starts prototype-based FX on all captured targets. Idempotent (ignores active).
-*/
-
-/* UCS_StartAreaFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+/* UCS_StartAreaFX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
     1: fxInstance      - [int] Reference to the declared FX Instance
     2: areaRadius      - [int] Radius around damageReceiver used to capture targets
     3: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
@@ -196,17 +128,7 @@ func void UCS_Init()
     Returns: [void]. Starts inline FX on all captured targets. Idempotent (ignores active).
 */
 
-/* UCS_RefreshAreaFX(1, 2, 3, 4, 5, 6)
-    1: fxInstance      - [int] Reference to the declared FX Instance
-    2: FxPrototype     - [int] Pre-created CONST INT reference registered via UCS_CreateFXProto
-    3: areaRadius      - [int] Radius around damageReceiver used to capture targets
-    4: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
-    5: damageSender    - [instance/C_NPC] Attacker instance
-    6: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
-    Returns: [void]. Starts/refreshes prototype-based FX on all captured targets. Keeps runtime params (resets current iteration only). Non-idempotent.
-*/
-
-/* UCS_RefreshAreaFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+/* UCS_RefreshAreaFX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
     1: fxInstance      - [int] Reference to the declared FX Instance
     2: areaRadius      - [int] Radius around damageReceiver used to capture targets
     3: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
@@ -225,17 +147,7 @@ func void UCS_Init()
     Returns: [void]. Starts/refreshes inline FX on all captured targets. Keeps runtime params (resets current iteration only). Non-idempotent.
 */
 
-/* UCS_RestartAreaFX(1, 2, 3, 4, 5, 6)
-    1: fxInstance      - [int] Reference to the declared FX Instance
-    2: FxPrototype     - [int] Pre-created CONST INT reference registered via UCS_CreateFXProto
-    3: areaRadius      - [int] Radius around damageReceiver used to capture targets
-    4: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
-    5: damageSender    - [instance/C_NPC] Attacker instance
-    6: centralDamageReceiver  - [instance/C_NPC] Central target around which nearby victims are captured
-    Returns: [void]. Starts/restarts prototype-based FX on all captured targets. Resets runtime params to default. Non-idempotent.
-*/
-
-/* UCS_RestartAreaFXEX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+/* UCS_RestartAreaFX(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
     1: fxInstance      - [int] Reference to the declared FX Instance
     2: areaRadius      - [int] Radius around damageReceiver used to capture targets
     3: includeCondition- [func] Daedalus function name acting as target filter (any true function if none, 'tf')
